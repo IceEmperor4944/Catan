@@ -30,7 +30,7 @@ public class HexTile : MonoBehaviour
     {
         foreach (Building building in buildings)
         {
-            building.CollectResources();
+            building.CollectResources(Type);
         }
     }
 }
