@@ -33,4 +33,20 @@ public class HexTile : MonoBehaviour
             building.CollectResources(Type);
         }
     }
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.TryGetComponent<Building>(out Building newBuilding))
+        {
+            buildings.Add(newBuilding);
+        }
+    }
+
+    public void OnCollisionExit(Collision collision)
+    {
+        if (collision.collider.TryGetComponent<Building>(out Building newBuilding))
+        {
+            buildings.Remove(newBuilding);
+        }
+    }
 }

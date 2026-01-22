@@ -1,5 +1,12 @@
 using UnityEngine;
 
+public enum PlaceableType
+{
+    Road,
+    Settlement,
+    City
+}
+
 public abstract class Placeable
 {
     public Placeable(Player owner)
