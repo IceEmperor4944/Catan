@@ -1,10 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerColor
+{
+    Red,
+    White,
+    Blue,
+    Yellow
+}
+
+
 public class Player : MonoBehaviour
 {
+    public PlayerColor Color { get; set; }
     private Dictionary<ResourceType, int> inventory = new();
     public int VictoryPoints { get; private set; }
+
+    public Player(PlayerColor color)
+    {
+        Color = color;
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

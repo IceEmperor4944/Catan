@@ -125,3 +125,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6b1c14860e53d40b65947b55eab4d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlacePoint
+  typeAvailable: 0

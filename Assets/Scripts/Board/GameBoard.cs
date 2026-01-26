@@ -1,6 +1,8 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 
 public class GameBoard : MonoBehaviour
 {
@@ -61,29 +63,82 @@ public class GameBoard : MonoBehaviour
         
     }
 
-    public void PlaceObject(Transform location, PlaceableType type)
+    public Placeable PlaceObject(PlacePoint point, Player player)
     {
-        switch (type)
+        PlayerColor color = player.Color;
+        Transform location = point.transform;
+        Placeable newObject = null;
+        switch (point.typeAvailable)
         {
             case PlaceableType.Settlement:
-                Instantiate(redSettlement, location);
+                switch (color)
+                {
+                    case PlayerColor.Red:
+                        newObject = Instantiate(redSettlement, location);
+                        break;
+                    case PlayerColor.White:
+                        newObject = Instantiate(whiteSettlement, location);
+                        break;
+                    case PlayerColor.Blue:
+                        newObject = Instantiate(blueSettlement, location);
+                        break;
+                    case PlayerColor.Yellow:
+                        newObject = Instantiate(yellowSettlement, location);
+                        break;
+                }
                 break;
             case PlaceableType.City:
-                Instantiate(redCity, location);
+                switch (color)
+                {
+                    case PlayerColor.Red:
+                        newObject = Instantiate(redCity, location);
+                        break;
+                    case PlayerColor.White:
+                        newObject = Instantiate(whiteCity, location);
+                        break;
+                    case PlayerColor.Blue:
+                        newObject = Instantiate(blueCity, location);
+                        break;
+                    case PlayerColor.Yellow:
+                        newObject = Instantiate(yellowCity, location);
+                        break;
+                }
                 break;
             case PlaceableType.RoadNW:
-                Road roadNW = Instantiate(redRoad, location);
-                roadNW.transform.Rotate(new Vector3(0, 30, 0));
+                newObject = BuildRoad(30, color, location);
                 break;
             case PlaceableType.RoadNE:
-                Road roadNE = Instantiate(redRoad, location);
-                roadNE.transform.Rotate(new Vector3(0, -30, 0));
+                newObject = BuildRoad(-30, color, location);
                 break;
             case PlaceableType.RoadNS:
-                Road road = Instantiate(redRoad, location);
-                road.transform.Rotate(new Vector3(0, 90, 0));
+                newObject = BuildRoad(90, color, location);
                 break;
         }
+
+        point.PlaceObject(newObject);
+        return newObject;
+    }
+
+    private Placeable BuildRoad(float yRot, PlayerColor color, Transform location)
+    {
+        Placeable newObject = null;
+        switch (color)
+        {
+            case PlayerColor.Red:
+                newObject = Instantiate(redRoad, location);
+                break;
+            case PlayerColor.White:
+                newObject = Instantiate(whiteRoad, location);
+                break;
+            case PlayerColor.Blue:
+                newObject = Instantiate(blueRoad, location);
+                break;
+            case PlayerColor.Yellow:
+                newObject = Instantiate(yellowRoad, location);
+                break;
+        }
+        newObject.transform.Rotate(new Vector3(0, yRot, 0));
+        return newObject;
     }
 
     public void RandomizeBoard()

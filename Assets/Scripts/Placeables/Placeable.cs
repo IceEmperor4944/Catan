@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum PlaceableType
@@ -11,10 +12,10 @@ public enum PlaceableType
 
 public abstract class Placeable : MonoBehaviour
 {
-    public Placeable(Player owner)
-    {
-        this.owner = owner;
-    }
+    [SerializeField]
+    public PlayerColor color;
 
     protected Player owner;
 }
+
+
