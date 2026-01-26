@@ -33,8 +33,11 @@ public class GameController : MonoBehaviour
                     int requiredType = (setupStep < 16 ? setupStep % 2 == 0 ? 1 : 2 : 0);
                     if (point.CanPlaceAt(players[currentPlayerIndex].Color, requiredType))
                     {
-                        board.PlaceObject(point, players[currentPlayerIndex]);
-                        if (setupStep < 16) SetUp();
+                        if (board.PlaceObject(point, players[currentPlayerIndex]) != null)
+                        {
+
+                            if (setupStep < 16) SetUp();
+                        }
                     }
                 }
             }

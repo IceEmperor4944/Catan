@@ -63,7 +63,7 @@ public class GameBoard : MonoBehaviour
         
     }
 
-    public Placeable PlaceObject(PlacePoint point, Player player)
+    public Placeable? PlaceObject(PlacePoint point, Player player)
     {
         PlayerColor color = player.Color;
         Transform location = point.transform;
@@ -115,8 +115,18 @@ public class GameBoard : MonoBehaviour
                 break;
         }
 
-        point.PlaceObject(newObject);
-        return newObject;
+        if (player.DoesPlayerHaveResourcesForPlaceable(newObject))
+        {
+            point.PlaceObject(newObject);
+
+            return newObject;
+        }
+        else
+        {
+            Destroy(newObject.gameObject);
+            return null;
+        }
+
     }
 
     private Placeable BuildRoad(float yRot, PlayerColor color, Transform location)

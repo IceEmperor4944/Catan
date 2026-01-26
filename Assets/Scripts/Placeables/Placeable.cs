@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,6 +17,8 @@ public abstract class Placeable : MonoBehaviour
     public PlayerColor color;
 
     protected Player owner;
+
+    public Dictionary<ResourceType, int> cost = new Dictionary<ResourceType, int>();
 }
 
 
