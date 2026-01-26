@@ -14,14 +14,10 @@ public enum ResourceType
 
 public class HexTile : MonoBehaviour
 {
-    public HexTile(ResourceType type, int number)
-    {
-        Type = type;
-        Number = number;
-    }
+    [SerializeField]
+    public ResourceType Type;
 
-    public ResourceType Type { get; private set; }
-    public int Number { get; private set; }
+    public int Number { get; set; }
 
     private List<Building> buildings = new();
 
