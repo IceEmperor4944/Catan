@@ -5,17 +5,33 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    private GameBoard board = new();
+    [SerializeField]
+    public GameBoard board;
+
     private List<Player> players = new();
     private int currentPlayerIndex = 0;
 
     void Start()
-    {   
+    {
+        StartGame(2);
     }
 
     void Update()
     {
-        
+        if (Input.GetMouseButtonDown(0))
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, 100))
+            {
+                PlacePoint point;
+                if (hit.collider.TryGetComponent<PlacePoint>(out point)) 
+                {
+                    board.PlaceObject(hit.transform, point.typeAvailable);
+                }
+            }
+        }
     }
 
     void StartGame(int playerCount)

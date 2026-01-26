@@ -2,12 +2,14 @@ using UnityEngine;
 
 public enum PlaceableType
 {
-    Road,
     Settlement,
-    City
+    City,
+    RoadNS,
+    RoadNE,
+    RoadNW
 }
 
-public abstract class Placeable
+public abstract class Placeable : MonoBehaviour
 {
     public Placeable(Player owner)
     {

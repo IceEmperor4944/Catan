@@ -11,27 +11,19 @@ public class GameBoard : MonoBehaviour
     private Transform[] tileHolders;
 
     [Header("Objects")]
-    [SerializeField]
     public GameObject tileGrid;
 
     [Header("Tile Types")]
     #region tiles
-    [SerializeField]
     public HexTile brickTile;
-    [SerializeField]
     public HexTile grainTile;
-    [SerializeField]
     public HexTile lumberTile;
-    [SerializeField]
     public HexTile desertTile;
-    [SerializeField]
     public HexTile oreTile;
-    [SerializeField]
     public HexTile woolTile;
     #endregion
 
     [Header("Number Tiles")]
-    [SerializeField]
     public GameObject numberTile2;
     public GameObject numberTile3;
     public GameObject numberTile4;
@@ -43,15 +35,55 @@ public class GameBoard : MonoBehaviour
     public GameObject numberTile11;
     public GameObject numberTile12;
 
+
+    [Header("Placeables")]
+    public Settlement redSettlement;
+    public City redCity;
+    public Road redRoad;
+    public Settlement whiteSettlement;
+    public City whiteCity;
+    public Road whiteRoad;
+    public Settlement blueSettlement;
+    public City blueCity;
+    public Road blueRoad;
+    public Settlement yellowSettlement;
+    public City yellowCity;
+    public Road yellowRoad;
+
+
     void Start()
     {
         tileHolders = tileGrid.GetComponentsInChildren<Transform>();
-        RandomizeBoard();
     }
 
     void Update()
     {
         
+    }
+
+    public void PlaceObject(Transform location, PlaceableType type)
+    {
+        switch (type)
+        {
+            case PlaceableType.Settlement:
+                Instantiate(redSettlement, location);
+                break;
+            case PlaceableType.City:
+                Instantiate(redCity, location);
+                break;
+            case PlaceableType.RoadNW:
+                Road roadNW = Instantiate(redRoad, location);
+                roadNW.transform.Rotate(new Vector3(0, 30, 0));
+                break;
+            case PlaceableType.RoadNE:
+                Road roadNE = Instantiate(redRoad, location);
+                roadNE.transform.Rotate(new Vector3(0, -30, 0));
+                break;
+            case PlaceableType.RoadNS:
+                Road road = Instantiate(redRoad, location);
+                road.transform.Rotate(new Vector3(0, 90, 0));
+                break;
+        }
     }
 
     public void RandomizeBoard()
