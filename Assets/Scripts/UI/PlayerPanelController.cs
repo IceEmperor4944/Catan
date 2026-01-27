@@ -42,10 +42,14 @@ public class PlayerPanelController : MonoBehaviour
 
     public void UpdateResourcesText()
     {
+        TMP_Text playerInfoText = GetComponentInChildren<TMP_Text>();
+        string playername = playerInfoText.text.Split(":")[0];
+        playerInfoText.text = playername + ": " + player.VictoryPoints + " VP";
+
         for (int i = 0; i < resourcePanels.Count; i++)
         {
             TMP_Text resourceText = resourcePanels[i].GetComponentInChildren<TMP_Text>();
-            resourceText.text = player.GetResourceCount((ResourceType)i).ToString();
+            resourceText.text = player.GetResourceCount((ResourceType)i).ToString() + "\uD83D\uDC11";
 
         }
     }

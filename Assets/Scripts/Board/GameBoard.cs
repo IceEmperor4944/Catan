@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using static UnityEditor.FilePathAttribute;
 
 public class GameBoard : MonoBehaviour
@@ -63,7 +64,7 @@ public class GameBoard : MonoBehaviour
         
     }
 
-    public Placeable? PlaceObject(PlacePoint point, Player player)
+    public Placeable? PlaceObject(PlacePoint point, Player player, bool free = false)
     {
         PlayerColor color = player.Color;
         Transform location = point.transform;
@@ -115,7 +116,7 @@ public class GameBoard : MonoBehaviour
                 break;
         }
 
-        if (player.DoesPlayerHaveResourcesForPlaceable(newObject))
+        if (free || player.DoesPlayerHaveResourcesForPlaceable(newObject))
         {
             point.PlaceObject(newObject);
             return newObject;
@@ -228,6 +229,22 @@ public class GameBoard : MonoBehaviour
             tileSet.RemoveAt(resourceTypeIndex);
 
             board.Add(tile);
+        }
+    }
+
+    public void TriggerAllTiles()
+    {
+        foreach (HexTile tile in board)
+        {
+            tile.CollectResources();
+        }
+    }
+
+    public void CollectResources(int number)
+    {
+        foreach(HexTile tile in board)
+        {
+            if (tile.Number == number) tile.CollectResources();
         }
     }
 

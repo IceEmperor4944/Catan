@@ -7,10 +7,12 @@ public class City : Building
     {
         cost.Add(ResourceType.Ore, 3);
         cost.Add(ResourceType.Grain, 2);
+
+        VPValue = 1;
     }
 
     public override void CollectResources(ResourceType type)
     {
-        owner.GainResource(type, 2);
+        Owner.GainResource(type, 2);
     }
 }

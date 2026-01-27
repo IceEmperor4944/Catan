@@ -16,7 +16,9 @@ public abstract class Placeable : MonoBehaviour
     [SerializeField]
     public PlayerColor color;
 
-    protected Player owner;
+    public int VPValue { get; protected set; } = 0;
+
+    public Player Owner { get; set; }
 
     public Dictionary<ResourceType, int> cost = new Dictionary<ResourceType, int>();
 }

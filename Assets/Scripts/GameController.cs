@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -18,8 +19,9 @@ public class GameController : MonoBehaviour
     public int SetupStep => setupStep;
 
     public int PlayerCount => players.Count;
-    public int TotalSetupSteps => players.Count * 6;
+    public int TotalSetupSteps => players.Count * 4;
     public bool InSetupPhase => setupStep < TotalSetupSteps; // 3 actions per player (Settlement, Road, End) * 2 turns of setup
+
     void Start()
     {
         StartGame(2);
@@ -45,27 +47,22 @@ public class GameController : MonoBehaviour
                 PlacePoint point;
                 if (hit.collider.TryGetComponent<PlacePoint>(out point)) 
                 {
-                    int requiredType = (InSetupPhase ? setupStep % 3 == 0 ? 1 : 2 : 0);
+                    int requiredType = (InSetupPhase ? setupStep % 2 == 0 ? 1 : 2 : 0);
                     if (point.CanPlaceAt(players[currentPlayerIndex].Color, requiredType))
                     {
-                        var placedObject = board.PlaceObject(point, players[currentPlayerIndex]);
+                        var placedObject = board.PlaceObject(point, players[currentPlayerIndex], InSetupPhase);
                         if (placedObject != null)
                         {
+                            Player player = players[currentPlayerIndex];
+                            placedObject.Owner = player;
+                            player.VictoryPoints += placedObject.VPValue;
 
                             if (InSetupPhase)
                             {
-                                var player = players[currentPlayerIndex];
-                                for (int i = 0; i < 5; i++)
-                                {
-                                    
-                                    if (!placedObject.cost.TryGetValue((ResourceType)i, out int resourceCount)) continue;
-                                    player.GainResource((ResourceType)i, resourceCount);
-                                    player.PanelController.UpdateResourcesText();
-                                }
                                 SetUp();
                                 uiController.UpdateActionPanelStartup(setupStep);
                             }
-                            //else NextTurn();
+                            players[currentPlayerIndex].PanelController.UpdateResourcesText();
                         }
                     }
                 }
@@ -83,67 +80,68 @@ public class GameController : MonoBehaviour
             Player newPlayer = new Player((PlayerColor)i);
             players.Add(newPlayer);
         }
-
+        uiController.SetStatus($"Player 1: Place a settlement");
         checkForPlacement = true;
     }
 
     void SetUp()
     {
-        // setupStep % (players.Count * 3) 
-        // Reverse order on second half of setup
-        // 
+        switch (PlayerCount)
+        {
+            case 2:
+            {
+                if (setupStep == 1) currentPlayerIndex = 1;
+                else if (setupStep == 5) currentPlayerIndex = 0;
+                break;
+            }
+            case 3:
+            {
+                if (setupStep == 1 || setupStep == 7) currentPlayerIndex = 1;
+                else if (setupStep == 3) currentPlayerIndex = 2;
+                else if (setupStep == 9) currentPlayerIndex = 0;
+                break;
+            }
+            case 4:
+            {
+                if (setupStep == 1 || setupStep == 11) currentPlayerIndex = 1;
+                if (setupStep == 3 || setupStep == 9) currentPlayerIndex = 2;
+                if (setupStep == 5) currentPlayerIndex = 3;
+                if (setupStep == 13) currentPlayerIndex = 0;
+                break;
+            }
+        }
 
-        // 2 players would have 6 actions
-        // 0 % 6 && 8 % 6
-        // 2 % 6 && 5 % 6
-
-        //3 players would have 9 turns
-        // 0 % 9 && 14 % 9
-        // 2 % 9 && 11 % 9
-        // 5 % 9 && 8 % 9
-
-        //4 players would have 12 turns
-        // 0 % 12 && 20 % 12
-        // 2 % 12 && 17 % 12
-        // 4 % 12 && 14 % 12
-        // 8 % 12 && 11 % 12
-
+        uiController.UpdateActionPanelStartup(setupStep);
         setupStep++;
+        uiController.SetStatus($"Player {currentPlayerIndex + 1}: Place a " + (setupStep % 2 == 0 ? "settlement" : "road"));
 
-        
+        if (setupStep == TotalSetupSteps) 
+        {
+            board.TriggerAllTiles();
+            for (int i = 0; i < players.Count; i++)
+            {
+                players[i].PanelController.UpdateResourcesText();
+            }
+
+            currentPlayerIndex = -1; // shhhh
+            NextTurn();
+        }
     }
 
     public void NextTurn() // returns whether the game was won
     {
-        if (InSetupPhase)
-        {
-            if (setupStep % (TotalSetupSteps * 0.5f) == 0 || setupStep % (TotalSetupSteps * 0.5f) == (PlayerCount + currentPlayerIndex) * 3 - 1 )
-            {
-                currentPlayerIndex = 0;
-            }
-            else if (setupStep % (TotalSetupSteps * 0.5f) == 2 || setupStep % (TotalSetupSteps * 0.5f) == (PlayerCount + currentPlayerIndex) * 3 - 1)
-            {
-                currentPlayerIndex = 1;
-            }
-            else if (setupStep % (TotalSetupSteps * 0.5f) == 5 || setupStep % (TotalSetupSteps * 0.5f) == (PlayerCount + currentPlayerIndex) * 3 - 1)
-            {
-                currentPlayerIndex = 2;
-            }
-            else if (setupStep % (TotalSetupSteps * 0.5f) == 8 || setupStep % (TotalSetupSteps * 0.5f) == (PlayerCount + currentPlayerIndex) * 3 - 1)
-            {
-                currentPlayerIndex = 3;
-            }
+        if (InSetupPhase) return;
+        currentPlayerIndex++;
 
-            setupStep++;
-            uiController.UpdateActionPanelStartup(setupStep);
-
-        }
-        else
-        {
-            currentPlayerIndex++;
-            if (currentPlayerIndex >= PlayerCount) currentPlayerIndex = 0;
-        }
+        if (currentPlayerIndex >= PlayerCount) currentPlayerIndex = 0;
         uiController.UpdateActionPanelStartup(setupStep);
-        
+
+        int numberRolled = UnityEngine.Random.Range(1, 6) + UnityEngine.Random.Range(1, 6);
+        board.CollectResources(numberRolled);
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].PanelController.UpdateResourcesText();
+        }
+        uiController.SetStatus($"Player {currentPlayerIndex + 1}'s turn! {numberRolled} was rolled!");
     }
 }

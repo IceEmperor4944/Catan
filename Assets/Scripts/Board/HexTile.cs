@@ -30,19 +30,19 @@ public class HexTile : MonoBehaviour
         }
     }
 
-    public void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.collider.TryGetComponent<Building>(out Building newBuilding))
+        if (other.GetComponentInParent<Building>())
         {
-            buildings.Add(newBuilding);
+            buildings.Add(other.GetComponentInParent<Building>());
         }
     }
 
-    public void OnCollisionExit(Collision collision)
+    private void OnTriggerExit(Collider other)
     {
-        if (collision.collider.TryGetComponent<Building>(out Building newBuilding))
+        if (other.GetComponentInParent<Building>())
         {
-            buildings.Remove(newBuilding);
+            buildings.Remove(other.GetComponentInParent<Building>());
         }
     }
 }

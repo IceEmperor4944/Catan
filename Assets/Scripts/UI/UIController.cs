@@ -23,6 +23,8 @@ public class UIController : MonoBehaviour
     [SerializeField] GameObject ResourcePanelPrefab;
     [SerializeField] GameController gameController;
 
+    [SerializeField] TMP_Text statusDisplay;
+
 
     [Header("ActionPanels")]
     private List<ActionPanelController> actionPanels;
@@ -127,14 +129,14 @@ public class UIController : MonoBehaviour
         var BuildRoadController = actionPanels.Find(apc => apc.action == ActionType.BuildRoad);
         var EndTurnController = actionPanels.Find(apc => apc.action == ActionType.EndTurn);
 
-        if (startupCount % 3 == 0)
+        if (startupCount % 2 == 0)
         {
             BuildSettlementController.UpdateActionAvailability(true);
             BuildRoadController.UpdateActionAvailability(false);
             EndTurnController.UpdateActionAvailability(false);
 
         }
-        else if (startupCount % 3 == 1)
+        else if (startupCount % 2 == 1)
         {
             BuildSettlementController.UpdateActionAvailability(false);
             BuildRoadController.UpdateActionAvailability(true);
@@ -147,6 +149,12 @@ public class UIController : MonoBehaviour
         }
 
     }
+
+    public void SetStatus(string status)
+    {
+        statusDisplay.text = status;
+    }
+
     // Update is called once per frame
     void Update()
     {

@@ -9,12 +9,11 @@ public enum PlayerColor
     Yellow
 }
 
-
 public class Player
 {
     public PlayerColor Color { get; set; }
-    private Dictionary<ResourceType, int> inventory = new() { { ResourceType.Brick, 2 }, { ResourceType.Lumber, 2 }, { ResourceType.Wool, 2 }, { ResourceType.Grain, 2 }, { ResourceType.Ore, 5 } };
-    public int VictoryPoints { get; private set; }
+    private Dictionary<ResourceType, int> inventory = new() { { ResourceType.Brick, 0 }, { ResourceType.Lumber, 0 }, { ResourceType.Wool, 0 }, { ResourceType.Grain, 0 }, { ResourceType.Ore, 0 } };
+    public int VictoryPoints { get; set; }
     public PlayerPanelController PanelController { get; set; }
 
     public Player(PlayerColor color)
