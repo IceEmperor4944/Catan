@@ -1,0 +1,95 @@
+using NUnit.Framework;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class PlayerPanelController : MonoBehaviour
+{
+
+    public List<PlayerPanelController> otherPlayerPanels = new List<PlayerPanelController>();
+    public List<GameObject> resourcePanels = new List<GameObject>();
+
+    bool IsPanelOpen = false;
+    private RectTransform rectTransform;
+    [SerializeField] GameObject PlayerText;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        rectTransform = GetComponent<RectTransform>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
+    public void InteractWithPanel()
+    {
+        int i = 0;
+        if (IsPanelOpen)
+        {
+            ClosePanel(true);
+        }
+        else
+        {
+            OpenPanel(true);
+        }
+    }
+
+    private void OpenPanel(bool initialCall)
+    {
+        RectTransform playerTextRect = PlayerText.GetComponent<RectTransform>();
+        playerTextRect.anchorMin = new Vector2(0.5f, 0.5f);
+        playerTextRect.anchorMax = new Vector2(0.5f, 0.6f);
+        playerTextRect.pivot = new Vector2(0.5f, 0.7f);
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, 160);
+        IsPanelOpen = true;
+
+        foreach(var resourcePanel in resourcePanels)
+        {
+            resourcePanel.GetComponent<RectTransform>().sizeDelta = new Vector2(50, 50);
+        }
+
+
+        bool isOtherPanelOpen = false;
+
+        for (int i = 0; i < otherPlayerPanels.Count; i++)
+        {
+            if (otherPlayerPanels[i].IsPanelOpen)
+            {
+                isOtherPanelOpen = true;
+                otherPlayerPanels[i].ClosePanel(false);
+            }
+            if (otherPlayerPanels[i].rectTransform.anchoredPosition.y < rectTransform.anchoredPosition.y)
+            {
+                otherPlayerPanels[i].rectTransform.anchoredPosition = new Vector2(otherPlayerPanels[i].rectTransform.anchoredPosition.x, otherPlayerPanels[i].rectTransform.anchoredPosition.y - 30);
+            }
+        }
+
+        //if (isOtherPanelOpen) rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, rectTransform.anchoredPosition.y + 30);
+    }
+
+    private void ClosePanel(bool initialCall)
+    {
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, 70);
+        IsPanelOpen = false;
+
+
+
+        foreach (var resourcePanel in resourcePanels)
+        {
+            resourcePanel.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
+        }
+
+
+        for (int i = 0; i < otherPlayerPanels.Count; i++)
+        {
+            if (otherPlayerPanels[i].rectTransform.anchoredPosition.y < rectTransform.anchoredPosition.y)
+            {
+                otherPlayerPanels[i].rectTransform.anchoredPosition = new Vector2(otherPlayerPanels[i].rectTransform.anchoredPosition.x, otherPlayerPanels[i].rectTransform.anchoredPosition.y + 30);
+            }
+        }
+        if (!initialCall) return;
+    }
+}
