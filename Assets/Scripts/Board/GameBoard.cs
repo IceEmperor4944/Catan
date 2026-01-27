@@ -118,7 +118,6 @@ public class GameBoard : MonoBehaviour
         if (player.DoesPlayerHaveResourcesForPlaceable(newObject))
         {
             point.PlaceObject(newObject);
-
             return newObject;
         }
         else

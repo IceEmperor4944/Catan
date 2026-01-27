@@ -12,12 +12,22 @@ public class GameController : MonoBehaviour
     private int currentPlayerIndex = 0;
     private bool checkForPlacement;
     private int setupStep = 0;
+
     public int PlayerCount => players.Count;
+    public bool InSetupPhase => setupStep < players.Count * 4;
     void Start()
     {
         StartGame(2);
     }
 
+    public Player GetPlayer(int index)
+    {
+        if (index < 0 || index >= PlayerCount)
+        {
+            return null;
+        }
+        return players[index];
+    }
     void Update()
     {
         if (checkForPlacement && Input.GetMouseButtonDown(0))
@@ -30,13 +40,26 @@ public class GameController : MonoBehaviour
                 PlacePoint point;
                 if (hit.collider.TryGetComponent<PlacePoint>(out point)) 
                 {
-                    int requiredType = (setupStep < 16 ? setupStep % 2 == 0 ? 1 : 2 : 0);
+                    int requiredType = (InSetupPhase ? setupStep % 2 == 0 ? 1 : 2 : 0);
                     if (point.CanPlaceAt(players[currentPlayerIndex].Color, requiredType))
                     {
-                        if (board.PlaceObject(point, players[currentPlayerIndex]) != null)
+                        var placedObject = board.PlaceObject(point, players[currentPlayerIndex]);
+                        if (placedObject != null)
                         {
 
-                            if (setupStep < 16) SetUp();
+                            if (InSetupPhase)
+                            {
+                                var player = players[currentPlayerIndex];
+                                for (int i = 0; i < 5; i++)
+                                {
+                                    
+                                    if (!placedObject.cost.TryGetValue((ResourceType)i, out int resourceCount)) continue;
+                                    player.GainResource((ResourceType)i, resourceCount);
+                                    player.PanelController.UpdateResourcesText();
+                                }
+                                SetUp();
+                            }
+                            else NextTurn();
                         }
                     }
                 }
@@ -49,39 +72,59 @@ public class GameController : MonoBehaviour
         setupStep = 0;
         board.RandomizeBoard();
         players.Clear();
-
-        players.Add(new Player(PlayerColor.Red));
-        players.Add(new Player(PlayerColor.Blue));
-        players.Add(new Player(PlayerColor.White));
-        players.Add(new Player(PlayerColor.Yellow));
+        for (int i = 0; i < playerCount; i++)
+        {
+            Player newPlayer = new Player((PlayerColor)i);
+            players.Add(newPlayer);
+        }
 
         checkForPlacement = true;
     }
 
     void SetUp()
     {
-        switch (setupStep)
-        {
-            case 1: case 11:
-                currentPlayerIndex = 1;
-                break;
-            case 3: case 9:
-                currentPlayerIndex = 2;
-                break;
-            case 5:
-                currentPlayerIndex = 3;
-                break;
-            case 13:
-                currentPlayerIndex = 0;
-                break;
-        }
+        // setupStep % (players.Count * 2) || setupStep % (players.Count * 2) == (players.Count - currentPlayerIndex * 2)
+        //
+
+        // 2 players would have 4 turns
+        // 0 % 4 && 6 % 4
+        // 2 % 4 && 4 % 4
+
+        //3 players would have 6 turns
+        // 0 % 6 && 10 % 6
+        // 2 % 6 && 8 % 6
+        // 4 % 6 && 6 % 6
+
+        //4 players would have 8 turns
+        // 0 % 8 && 14 % 8
+        // 2 % 8 && 12 % 8
+        // 4 % 8 && 10 % 8
+        // 6 % 8 && 8 % 8
+
         setupStep++;
+
+        if (setupStep % (PlayerCount * 2) == 0 || setupStep % (PlayerCount * 2) == (PlayerCount - currentPlayerIndex * 2))
+        {
+            currentPlayerIndex = 0;
+        }
+        if (setupStep % (PlayerCount * 2) == 2 || setupStep % (PlayerCount * 2) == (PlayerCount - currentPlayerIndex * 2))
+        {
+            currentPlayerIndex = 1;
+        }
+        if (setupStep % (PlayerCount * 2) == 4 || setupStep % (PlayerCount * 2) == (PlayerCount - currentPlayerIndex * 2))
+        {
+            currentPlayerIndex = 2;
+        }
+        if (setupStep % (PlayerCount * 2) == 6 || setupStep % (PlayerCount * 2) == (PlayerCount - currentPlayerIndex * 2))
+        {
+            currentPlayerIndex = 3;
+        }
     }
 
     bool NextTurn() // returns whether the game was won
     {
         currentPlayerIndex++;
-        if (currentPlayerIndex >= players.Count) currentPlayerIndex = 0;
+        if (currentPlayerIndex >= PlayerCount) currentPlayerIndex = 0;
         return players[currentPlayerIndex].VictoryPoints == 10;
     }
 }

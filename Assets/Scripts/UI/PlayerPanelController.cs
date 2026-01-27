@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ public class PlayerPanelController : MonoBehaviour
     bool IsPanelOpen = false;
     private RectTransform rectTransform;
     [SerializeField] GameObject PlayerText;
+    public Player player;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -37,9 +40,20 @@ public class PlayerPanelController : MonoBehaviour
         }
     }
 
+    public void UpdateResourcesText()
+    {
+        for (int i = 0; i < resourcePanels.Count; i++)
+        {
+            TMP_Text resourceText = resourcePanels[i].GetComponentInChildren<TMP_Text>();
+            resourceText.text = player.GetResourceCount((ResourceType)i).ToString();
+
+        }
+    }
+
     private void OpenPanel(bool initialCall)
     {
         RectTransform playerTextRect = PlayerText.GetComponent<RectTransform>();
+        
         playerTextRect.anchorMin = new Vector2(0.5f, 0.5f);
         playerTextRect.anchorMax = new Vector2(0.5f, 0.6f);
         playerTextRect.pivot = new Vector2(0.5f, 0.7f);

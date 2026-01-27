@@ -13,8 +13,9 @@ public enum PlayerColor
 public class Player : MonoBehaviour
 {
     public PlayerColor Color { get; set; }
-    private Dictionary<ResourceType, int> inventory = new() { { ResourceType.Brick, 2 }, { ResourceType.Lumber, 2 }, { ResourceType.Wool, 2 }, { ResourceType.Grain, 2 } };
+    private Dictionary<ResourceType, int> inventory = new() { { ResourceType.Brick, 2 }, { ResourceType.Lumber, 2 }, { ResourceType.Wool, 2 }, { ResourceType.Grain, 2 }, { ResourceType.Ore, 5 } };
     public int VictoryPoints { get; private set; }
+    public PlayerPanelController PanelController { get; set; }
 
     public Player(PlayerColor color)
     {
@@ -31,6 +32,12 @@ public class Player : MonoBehaviour
     {
         if (inventory.ContainsKey(type)) inventory[type] += count;
         else inventory.Add(type, count);
+    }
+
+    public int GetResourceCount(ResourceType type)
+    {
+        if (inventory.ContainsKey(type)) return inventory[type];
+        return 0;
     }
 
     /// <summary>
@@ -58,6 +65,8 @@ public class Player : MonoBehaviour
         {
             inventory[resource.Key] -= resource.Value;
         }
+
+        PanelController.UpdateResourcesText();
 
         return true;
        
