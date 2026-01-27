@@ -61,7 +61,7 @@ public class PlayerPanelController : MonoBehaviour
         playerTextRect.anchorMin = new Vector2(0.5f, 0.5f);
         playerTextRect.anchorMax = new Vector2(0.5f, 0.6f);
         playerTextRect.pivot = new Vector2(0.5f, 0.7f);
-        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, 160);
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, 170);
         IsPanelOpen = true;
 
         foreach(var resourcePanel in resourcePanels)
@@ -86,7 +86,7 @@ public class PlayerPanelController : MonoBehaviour
 
     private void ClosePanel(bool initialCall)
     {
-        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, 70);
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, 130);
         IsPanelOpen = false;
 
 
