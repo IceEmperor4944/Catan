@@ -10,7 +10,7 @@ public enum PlayerColor
 }
 
 
-public class Player : MonoBehaviour
+public class Player
 {
     public PlayerColor Color { get; set; }
     private Dictionary<ResourceType, int> inventory = new() { { ResourceType.Brick, 2 }, { ResourceType.Lumber, 2 }, { ResourceType.Wool, 2 }, { ResourceType.Grain, 2 }, { ResourceType.Ore, 5 } };

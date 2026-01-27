@@ -66,13 +66,11 @@ public class PlayerPanelController : MonoBehaviour
         }
 
 
-        bool isOtherPanelOpen = false;
 
         for (int i = 0; i < otherPlayerPanels.Count; i++)
         {
             if (otherPlayerPanels[i].IsPanelOpen)
             {
-                isOtherPanelOpen = true;
                 otherPlayerPanels[i].ClosePanel(false);
             }
             if (otherPlayerPanels[i].rectTransform.anchoredPosition.y < rectTransform.anchoredPosition.y)
@@ -80,8 +78,6 @@ public class PlayerPanelController : MonoBehaviour
                 otherPlayerPanels[i].rectTransform.anchoredPosition = new Vector2(otherPlayerPanels[i].rectTransform.anchoredPosition.x, otherPlayerPanels[i].rectTransform.anchoredPosition.y - 30);
             }
         }
-
-        //if (isOtherPanelOpen) rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, rectTransform.anchoredPosition.y + 30);
     }
 
     private void ClosePanel(bool initialCall)

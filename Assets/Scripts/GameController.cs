@@ -8,13 +8,18 @@ public class GameController : MonoBehaviour
     [SerializeField]
     public GameBoard board;
 
+    [SerializeField] UIController uiController;
+
     private List<Player> players = new();
     private int currentPlayerIndex = 0;
     private bool checkForPlacement;
     private int setupStep = 0;
 
+    public int SetupStep => setupStep;
+
     public int PlayerCount => players.Count;
-    public bool InSetupPhase => setupStep < players.Count * 4;
+    public int TotalSetupSteps => players.Count * 6;
+    public bool InSetupPhase => setupStep < TotalSetupSteps; // 3 actions per player (Settlement, Road, End) * 2 turns of setup
     void Start()
     {
         StartGame(2);
@@ -40,7 +45,7 @@ public class GameController : MonoBehaviour
                 PlacePoint point;
                 if (hit.collider.TryGetComponent<PlacePoint>(out point)) 
                 {
-                    int requiredType = (InSetupPhase ? setupStep % 2 == 0 ? 1 : 2 : 0);
+                    int requiredType = (InSetupPhase ? setupStep % 3 == 0 ? 1 : 2 : 0);
                     if (point.CanPlaceAt(players[currentPlayerIndex].Color, requiredType))
                     {
                         var placedObject = board.PlaceObject(point, players[currentPlayerIndex]);
@@ -58,8 +63,9 @@ public class GameController : MonoBehaviour
                                     player.PanelController.UpdateResourcesText();
                                 }
                                 SetUp();
+                                uiController.UpdateActionPanelStartup(setupStep);
                             }
-                            else NextTurn();
+                            //else NextTurn();
                         }
                     }
                 }
@@ -83,48 +89,61 @@ public class GameController : MonoBehaviour
 
     void SetUp()
     {
-        // setupStep % (players.Count * 2) || setupStep % (players.Count * 2) == (players.Count - currentPlayerIndex * 2)
-        //
+        // setupStep % (players.Count * 3) 
+        // Reverse order on second half of setup
+        // 
 
-        // 2 players would have 4 turns
-        // 0 % 4 && 6 % 4
-        // 2 % 4 && 4 % 4
+        // 2 players would have 6 actions
+        // 0 % 6 && 8 % 6
+        // 2 % 6 && 5 % 6
 
-        //3 players would have 6 turns
-        // 0 % 6 && 10 % 6
-        // 2 % 6 && 8 % 6
-        // 4 % 6 && 6 % 6
+        //3 players would have 9 turns
+        // 0 % 9 && 14 % 9
+        // 2 % 9 && 11 % 9
+        // 5 % 9 && 8 % 9
 
-        //4 players would have 8 turns
-        // 0 % 8 && 14 % 8
-        // 2 % 8 && 12 % 8
-        // 4 % 8 && 10 % 8
-        // 6 % 8 && 8 % 8
+        //4 players would have 12 turns
+        // 0 % 12 && 20 % 12
+        // 2 % 12 && 17 % 12
+        // 4 % 12 && 14 % 12
+        // 8 % 12 && 11 % 12
 
         setupStep++;
 
-        if (setupStep % (PlayerCount * 2) == 0 || setupStep % (PlayerCount * 2) == (PlayerCount - currentPlayerIndex * 2))
-        {
-            currentPlayerIndex = 0;
-        }
-        if (setupStep % (PlayerCount * 2) == 2 || setupStep % (PlayerCount * 2) == (PlayerCount - currentPlayerIndex * 2))
-        {
-            currentPlayerIndex = 1;
-        }
-        if (setupStep % (PlayerCount * 2) == 4 || setupStep % (PlayerCount * 2) == (PlayerCount - currentPlayerIndex * 2))
-        {
-            currentPlayerIndex = 2;
-        }
-        if (setupStep % (PlayerCount * 2) == 6 || setupStep % (PlayerCount * 2) == (PlayerCount - currentPlayerIndex * 2))
-        {
-            currentPlayerIndex = 3;
-        }
+        
     }
 
-    bool NextTurn() // returns whether the game was won
+    public void NextTurn() // returns whether the game was won
     {
-        currentPlayerIndex++;
-        if (currentPlayerIndex >= PlayerCount) currentPlayerIndex = 0;
-        return players[currentPlayerIndex].VictoryPoints == 10;
+        if (InSetupPhase)
+        {
+            if (setupStep % (TotalSetupSteps * 0.5f) == 0 || setupStep % (TotalSetupSteps * 0.5f) == (PlayerCount + currentPlayerIndex) * 3 - 1 )
+            {
+                currentPlayerIndex = 0;
+            }
+            else if (setupStep % (TotalSetupSteps * 0.5f) == 2 || setupStep % (TotalSetupSteps * 0.5f) == (PlayerCount + currentPlayerIndex) * 3 - 1)
+            {
+                currentPlayerIndex = 1;
+            }
+            else if (setupStep % (TotalSetupSteps * 0.5f) == 5 || setupStep % (TotalSetupSteps * 0.5f) == (PlayerCount + currentPlayerIndex) * 3 - 1)
+            {
+                currentPlayerIndex = 2;
+            }
+            else if (setupStep % (TotalSetupSteps * 0.5f) == 8 || setupStep % (TotalSetupSteps * 0.5f) == (PlayerCount + currentPlayerIndex) * 3 - 1)
+            {
+                currentPlayerIndex = 3;
+            }
+
+            setupStep++;
+            uiController.UpdateActionPanelStartup(setupStep);
+
+        }
+        else
+        {
+            currentPlayerIndex++;
+            if (currentPlayerIndex >= PlayerCount) currentPlayerIndex = 0;
+        }
+        uiController.UpdateActionPanelStartup(setupStep);
+        
     }
 }

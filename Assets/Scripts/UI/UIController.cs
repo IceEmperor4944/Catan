@@ -23,12 +23,17 @@ public class UIController : MonoBehaviour
     [SerializeField] GameObject ResourcePanelPrefab;
     [SerializeField] GameController gameController;
 
+
+    [Header("ActionPanels")]
+    private List<ActionPanelController> actionPanels;
+
     private List<PlayerPanelController> playerPanels;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerPanels = new List<PlayerPanelController>();
+        actionPanels = new List<ActionPanelController>();
         SetupPlayerPanels();
         SetupActionPanel();
     }
@@ -92,18 +97,56 @@ public class UIController : MonoBehaviour
 
     private void SetupActionPanel()
     {
-        foreach (var action in System.Enum.GetValues(typeof(ActionType)))
+        foreach (ActionType action in System.Enum.GetValues(typeof(ActionType)))
         {
             GameObject actionPanelInstance = Instantiate(ActionPanelPrefab, LeftInnerPanel.transform);
             actionPanelInstance.transform.SetParent(LeftInnerPanel.transform);
             actionPanelInstance.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -75 * (int)action);
             actionPanelInstance.name = "ActionPanel_" + action.ToString();
             actionPanelInstance.GetComponentInChildren<TMP_Text>().text = Regex.Replace(action.ToString(), @"(?<!^)(?=[A-Z])", " ");
+            actionPanelInstance.GetComponent<ActionPanelController>().action = action;
+            actionPanelInstance.GetComponent<ActionPanelController>().UpdateActionAvailability(false);
+            if (action == ActionType.EndTurn)
+            {
+                actionPanelInstance.GetComponent<ActionPanelController>().gameObject.AddComponent<Button>().onClick.AddListener(() =>
+                {
+                    gameController.NextTurn();
+                });
+            }
+            actionPanels.Add(actionPanelInstance.GetComponent<ActionPanelController>());
         }
+
+        
+
+        UpdateActionPanelStartup(gameController.SetupStep);
     }
 
+    public void UpdateActionPanelStartup(int startupCount)
+    {
+        var BuildSettlementController = actionPanels.Find(apc => apc.action == ActionType.BuildSettlement);
+        var BuildRoadController = actionPanels.Find(apc => apc.action == ActionType.BuildRoad);
+        var EndTurnController = actionPanels.Find(apc => apc.action == ActionType.EndTurn);
 
+        if (startupCount % 3 == 0)
+        {
+            BuildSettlementController.UpdateActionAvailability(true);
+            BuildRoadController.UpdateActionAvailability(false);
+            EndTurnController.UpdateActionAvailability(false);
 
+        }
+        else if (startupCount % 3 == 1)
+        {
+            BuildSettlementController.UpdateActionAvailability(false);
+            BuildRoadController.UpdateActionAvailability(true);
+        }
+        else
+        {
+            BuildSettlementController.UpdateActionAvailability(false);
+            BuildRoadController.UpdateActionAvailability(false);
+            EndTurnController.UpdateActionAvailability(true);
+        }
+
+    }
     // Update is called once per frame
     void Update()
     {
