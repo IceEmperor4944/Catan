@@ -51,7 +51,7 @@ public class UIController : MonoBehaviour
             gameController.GetPlayer(i).PanelController = panelController;
             RightInnerPanel.transform.SetParent(playerPanelInstance.transform);
 
-            playerPanelInstance.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -100 * i);
+            playerPanelInstance.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -150 * i);
             PlayerColor color = (PlayerColor)i;
             switch (color)
             {
@@ -77,7 +77,7 @@ public class UIController : MonoBehaviour
             {
                 var resourcePanel = Instantiate(ResourcePanelPrefab, playerPanelInstance.transform);
                 resourcePanel.transform.SetParent(playerPanelInstance.transform);
-                resourcePanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-100 + (j * 45), -10);
+                resourcePanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-100 + (j * 45), -35);
                 resourcePanel.GetComponentInChildren<TMP_Text>().text = panelController.player.GetResourceCount((ResourceType)j).ToString();
 
                 panelController.resourcePanels.Add(resourcePanel);

@@ -136,7 +136,7 @@ public class GameController : MonoBehaviour
         if (currentPlayerIndex >= PlayerCount) currentPlayerIndex = 0;
         uiController.UpdateActionPanelStartup(setupStep);
 
-        int numberRolled = UnityEngine.Random.Range(1, 6) + UnityEngine.Random.Range(1, 6);
+        int numberRolled = UnityEngine.Random.Range(1, 7) + UnityEngine.Random.Range(1, 7);
         board.CollectResources(numberRolled);
         for (int i = 0; i < players.Count; i++)
         {

@@ -19,7 +19,7 @@ public class PlacePoint : MonoBehaviour
             return false;
         if (PlacedObject)
         {
-            if (typeAvailable != PlaceableType.City) return false;
+            if (typeAvailable != PlaceableType.City || PlacedObject.GetComponent<City>()) return false;
             return color == PlacedObject.color;
         }
         if (typeAvailable == PlaceableType.Settlement && settlementsInRadius.Count > 0) return false;

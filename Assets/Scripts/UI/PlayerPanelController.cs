@@ -49,7 +49,7 @@ public class PlayerPanelController : MonoBehaviour
         for (int i = 0; i < resourcePanels.Count; i++)
         {
             TMP_Text resourceText = resourcePanels[i].GetComponentInChildren<TMP_Text>();
-            resourceText.text = player.GetResourceCount((ResourceType)i).ToString() + "\uD83D\uDC11";
+            resourceText.text = player.GetResourceCount((ResourceType)i).ToString();
 
         }
     }
