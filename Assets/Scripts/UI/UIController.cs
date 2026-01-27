@@ -35,7 +35,7 @@ public class UIController : MonoBehaviour
 
     private void SetupPlayerPanels()
     {
-        for (int i = 0; i < gameController.playerCount; i++)
+        for (int i = 0; i < gameController.PlayerCount; i++)
         {
             GameObject playerPanelInstance = Instantiate(PlayerPanelPrefab, RightInnerPanel.transform);
             RightInnerPanel.transform.SetParent(playerPanelInstance.transform);

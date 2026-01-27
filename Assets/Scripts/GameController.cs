@@ -12,7 +12,7 @@ public class GameController : MonoBehaviour
     private int currentPlayerIndex = 0;
     private bool checkForPlacement;
     private int setupStep = 0;
-
+    public int PlayerCount => players.Count;
     void Start()
     {
         StartGame(2);
