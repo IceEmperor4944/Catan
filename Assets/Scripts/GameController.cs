@@ -66,12 +66,49 @@ public class GameController : MonoBehaviour
                                 SetUp();
                                 uiController.UpdateActionPanelStartup(setupStep);
                             }
+                            else
+                            {
+                                uiController.UpdateActionPanels();
+                            }
                             players[currentPlayerIndex].PanelController.UpdateResourcesText();
                         }
                     }
                 }
             }
         }
+    }
+
+    public bool CanCurrentPlayerPerformAction(ActionPanelController panelController)
+    {
+        bool canPerform = false;
+        switch (panelController.action)
+        {
+            case ActionType.BuildSettlement:
+                if (players[currentPlayerIndex].GetResourceCount(ResourceType.Brick) >= 1 && players[currentPlayerIndex].GetResourceCount(ResourceType.Lumber) >= 1 && players[currentPlayerIndex].GetResourceCount(ResourceType.Wool) >= 1 && players[currentPlayerIndex].GetResourceCount(ResourceType.Grain) >= 1)
+                {
+                    canPerform = true;
+                }
+                break;
+            case ActionType.BuildRoad:
+                if (players[currentPlayerIndex].GetResourceCount(ResourceType.Brick) >= 1 && players[currentPlayerIndex].GetResourceCount(ResourceType.Lumber) >= 1)
+                {
+                    canPerform = true;
+                }
+                break;
+            case ActionType.BuildCity:
+                if (players[currentPlayerIndex].GetResourceCount(ResourceType.Ore) >= 3 && players[currentPlayerIndex].GetResourceCount(ResourceType.Grain) >= 2)
+                {
+                    canPerform = true;
+                }
+                break;
+            case ActionType.Trade:
+                break;
+            case ActionType.EndTurn:
+                break;
+            default:
+                break;
+        }
+        return canPerform;
     }
 
     void StartGame(int playerCount)
@@ -203,5 +240,7 @@ public class GameController : MonoBehaviour
         }
 
         uiController.SetStatus($"Player {currentPlayerIndex + 1}'s turn!\n{rollNumber} was rolled!");
+        uiController.SetStatus($"Player {currentPlayerIndex + 1}'s turn! {numberRolled} was rolled!");
+        uiController.UpdateActionPanels();
     }
 }

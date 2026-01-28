@@ -149,6 +149,14 @@ public class UIController : MonoBehaviour
         }
 
     }
+    
+    public void UpdateActionPanels()
+    {
+        for (int i = 0; i < actionPanels.Count; i++)
+        {
+            actionPanels[i].UpdateActionAvailability(gameController.CanCurrentPlayerPerformAction(actionPanels[i]));
+        }
+    }
 
     public void SetStatus(string status)
     {
