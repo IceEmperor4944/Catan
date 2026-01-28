@@ -25,7 +25,6 @@ public class GameController : MonoBehaviour
     [SerializeField] Rigidbody die1;
     [SerializeField] Rigidbody die2;
     private int rollNumber;
-
     void Start()
     {
         StartGame(2);
@@ -240,7 +239,6 @@ public class GameController : MonoBehaviour
         }
 
         uiController.SetStatus($"Player {currentPlayerIndex + 1}'s turn!\n{rollNumber} was rolled!");
-        uiController.SetStatus($"Player {currentPlayerIndex + 1}'s turn! {numberRolled} was rolled!");
         uiController.UpdateActionPanels();
     }
 }
